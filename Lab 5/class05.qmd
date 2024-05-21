@@ -1,0 +1,203 @@
+---
+title: "Class05: Data visualization with ggplot"
+author: "Yi-Hung Lee (PID: A16587141)"
+format: html
+toc: true
+---
+## ggplot introduction
+
+Today we will have our first play with the **ggplot2** package - one of the most popular graphics packages on the planet.
+
+There are many plotting systems in R. These include so-called *"base"* plot/graphs.
+
+Base plot is generally rather short code and dull plots - but it is always for you and is fast for big dataset.
+
+```{r}
+plot(cars)
+```
+
+Try ggplot: Need to install **ggplot** package, use function `install.packages()`. Already installed.
+
+Every time I want to use a package, I need to call the library by function `library(ggplot2)`
+
+```{r}
+library(ggplot2)
+
+ggplot(cars)
+```
+Every **ggplot** has at least 3 things:
+
+ - **data**: the data. frame with the data you want to plot
+ - **aes**: the aesthetic mapping of the data to the plot
+ - **geom**: how do you want the plot to look
+ 
+```{r}
+ggplot(cars) +
+  aes(x=speed, y=dist)
+```
+```{r}
+ggplot(cars) +
+  aes(x = speed, y = dist) +
+  geom_point()
+```
+```{r}
+ggplot(cars) +
+  aes(x = speed, y = dist) +
+  geom_point() +
+  geom_smooth()
+```
+```{r}
+ggplot(cars) +
+  aes(x = speed, y = dist) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE )
+```
+```{r}
+bp <- ggplot(cars) +
+  aes(x = speed, y = dist) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE )+
+  labs(title = "Speed and stopping distance of cars",
+      x = "Speed (MPH)", 
+      y = "Stopping distance (ft)",
+      subtitle = "MIT DUYYYYY",
+      caption = "Dataset = 'cars'") +
+  theme_bw()
+
+bp
+```
+
+## A more complicated scatter plot
+
+Here we make a plot of gene expression data:
+
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+head(genes)
+```
+```{r}
+nrow(genes)
+colnames(genes)
+ncol(genes)
+table(genes$State)
+round(table(genes$State == 'up' )/nrow(genes) * 100, 2 )
+```
+```{r}
+n.gene <- nrow(genes)
+n.up <- sum(genes$State == 'up')
+
+up.percent <- n.up/n.gene *100
+round(up.percent, 2)
+```
+
+```{r}
+n <- 
+  ggplot(genes) +
+  aes(x = Condition1, y = Condition2) +
+  geom_point()
+
+n
+```
+```{r}
+gene_plot <- n + aes(col = State)
+
+gene_plot
+```
+```{r}
+gene_plot + scale_color_manual(values = c("blue", "gray", "red")) +
+  labs(x = "Control(no drug)", y = "Drug Treatment", title = "Gene Expression Changing Upon Drug Treatment")
+```
+## Exploring the gapminder dataset
+
+```{r}
+library(gapminder)
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+gapminder <- read.delim(url)
+```
+
+```{r}
+head(gapminder)
+```
+> Q. How many continent are there?
+Use function `unique()`
+
+```{r}
+num <- unique(gapminder$continent)
+length(num)
+```
+
+> Q. How many countries are there?
+
+```{r}
+num <- unique(gapminder$country)
+length(num)
+```
+
+
+```{r}
+library(dplyr)
+gapminder_2007 <- gapminder %>% filter(year==2007)
+head(gapminder_2007)
+```
+
+```{r}
+library(ggplot2)
+ggplot(gapminder_2007) + 
+  aes(x = gdpPercap, y = lifeExp) +
+  geom_point(alpha=0.5)
+```
+```{r}
+ggplot(gapminder_2007) + 
+  aes(x = gdpPercap, y = lifeExp, color = continent, size = pop) +
+  geom_point(alpha=0.5)
+```
+```{r}
+ggplot(gapminder_2007) + 
+  aes(x = gdpPercap, y = lifeExp, color = pop) +
+  geom_point(alpha=0.7)
+```
+> Q. How to reflect the real population on the size of the points
+
+```{r}
+ggplot(gapminder_2007) + 
+  geom_point(aes(x = gdpPercap, y = lifeExp,
+                 size = pop), alpha=0.5) + 
+  scale_size_area(max_size = 10)
+```
+> Q. Can you adapt the code you have learned thus far to reproduce our gapminder scatter plot for the year 1957? What do you notice about this plot is it easy to compare with the one for 2007?
+
+```{r}
+gapminder_1957 <- gapminder %>% filter(year == 2007 | year==1957)
+ggplot(gapminder_1957) +
+  aes(x = gdpPercap, y = lifeExp, color = continent, size = pop) +
+  geom_point() + 
+  scale_size_area(max_size = 10) +
+  facet_wrap(~year)
+```
+
+## Animation
+
+```{r}
+library(gapminder)
+library(gganimate)
+# Setup nice regular ggplot of the gapminder data
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  # Facet by continent
+  facet_wrap(~continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  shadow_wake(wake_length = 0.1, alpha = FALSE)
+```
+
+
+# Happy Cat
+
+![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXdsaGI1aHp5ZzhqMjBnY2drcXpqd3N3d3F1OTQxem5zOTcxbDl6diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gVsmn4qdyBn1Bra2tN/giphy-downsized-large.gif)
+
