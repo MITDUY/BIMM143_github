@@ -1,0 +1,236 @@
+---
+title: "Class08: Unsupervised Learning Analysis of Human Breast Cancer Cells"
+author: "Yi-Hung Lee (PID: A16587141)"
+format: html
+---
+
+## Preparing the data
+
+```{r}
+# Save your input data file into your Project directory
+fna.data <- "WisconsinCancer.csv"
+
+# Complete the following code to input the data and store as wisc.df
+wisc.df <- read.csv(fna.data, row.names=1)
+
+head(wisc.df)
+```
+
+```{r}
+# We can use -1 here to remove the first column
+wisc.data <- wisc.df[,-1]
+
+head(wisc.data)
+```
+
+```{r}
+# Create diagnosis vector for later 
+diagnosis <- wisc.df$diagnosis
+```
+
+> Q1. How many observations are in this dataset?
+
+```{r}
+length(diagnosis)
+```
+
+> Q2. How many of the observations have a malignant diagnosis?
+
+```{r}
+table(diagnosis)
+sum(diagnosis == 'M')
+```
+
+> Q3. How many variables/features in the data are suffixed with \_mean?
+
+```{r}
+length(grep("_mean", names(wisc.data), value = TRUE))
+```
+
+## Principal Component Analysis
+
+### Try kmeans
+
+```{r}
+km <- kmeans(wisc.data, centers = 2)
+head(km$cluster)
+```
+
+```{r}
+table(km$cluster, diagnosis)
+```
+
+Let's try `hclust` is the distanct matrix as produced by the `dist()` function.
+
+```{r}
+hc <- hclust(dist(wisc.data))
+library(ggplot2)
+library(ggdendro)
+hhc <- dendro_data(hc, type = "rectangle")
+ggdendrogram(hc, rotate = FALSE) +
+  labs(title = 'HCluster Dendrogram') 
+```
+WTF is this...
+
+### Performing PCA
+
+```{r}
+# Check column means and standard deviations
+colMeans(wisc.data)
+apply(wisc.data,2,sd)
+```
+
+```{r}
+# Perform PCA on wisc.data by completing the following code
+wisc.pr <- prcomp(wisc.data, scale = T)
+summary(wisc.pr)
+```
+
+> Q4. From your results, what proportion of the original variance is captured by the first principal components (PC1)?
+
+```{r}
+summary(wisc.pr)$importance[2,1]
+```
+
+> Q5. How many principal components (PCs) are required to describe at least 70% of the original variance in the data?
+
+```{r}
+min(which(summary(wisc.pr)$importance[3,] > 0.7))
+```
+
+
+> Q6. How many principal components (PCs) are required to describe at least 90% of the original variance in the data?
+
+```{r}
+min(which(summary(wisc.pr)$importance[3,] > 0.9))
+```
+
+
+## Interpreting PCA results
+
+```{r}
+biplot(wisc.pr)
+```
+
+> Q7. What stands out to you about this plot? Is it easy or difficult to understand? Why?
+
+It is very difficult to understand and interpret
+
+```{r}
+ggplot(wisc.pr$x, aes(x = PC1, y = PC2, col = diagnosis)) +
+  geom_point() +
+  labs(title = 'PC1 v.s. PC2')
+```
+
+> Q8. Generate a similar plot for principal components 1 and 3. What do you notice about these plots?
+
+```{r}
+ggplot(wisc.pr$x, aes(x = PC1, y = PC3, col = diagnosis)) +
+  geom_point() +
+  labs(title = 'PC1 v.s. PC3')
+```
+
+We realize that all of the malignant points are on the left and all of the benign points are on the right.
+
+## Variance explained
+
+```{r}
+pr.var <- wisc.pr$sdev^2
+head(pr.var)
+```
+
+
+```{r}
+# Variance explained by each principal component: pve
+pve <- pr.var / sum(pr.var)
+
+ggplot(as.data.frame(pve), aes(x = 1:length(pve), y = pve)) +
+  ylim(0, 1) +
+  geom_point(shape = 'o', size = 5) +
+  geom_line() +
+  labs(title = 'PVE Plot', x = "Principal Component", y = "Proportion of Variance Explained") 
+```
+
+Plot Scree plot
+```{r}
+# Alternative scree plot of the same data, note data driven y-axis
+barplot(pve, ylab = "Precent of Variance Explained",
+     names.arg=paste0("PC",1:length(pve)), las=2, axes = FALSE)
+axis(2, at=pve, labels=round(pve,2)*100 )
+```
+Using ggplot:
+
+```{r}
+## ggplot based graph
+## install.packages("factoextra")
+library(factoextra)
+fviz_eig(wisc.pr, addlabels = TRUE)
+```
+
+## Communicating PCA results
+
+> Q9. For the first principal component, what is the component of the loading vector (i.e. wisc.pr$rotation[,1]) for the feature concave.points_mean?
+
+## Hierarchical clustering
+
+Use `scale()` to scale the data, and apply `hclust()`
+```{r}
+data.scale <- scale(wisc.data)
+data.dist <- dist(data.scale)
+wisc.hclust <- hclust(data.dist)
+```
+
+```{r}
+plot(wisc.hclust)
+abline(h = 19, col = 'red', lty = 2)
+```
+
+```{r}
+wisc.hclust.clusters <- cutree(wisc.hclust, h = 19)
+table(wisc.hclust.clusters, diagnosis)
+```
+```{r}
+d <- dist(wisc.pr$x[, 1:3])
+wisc.pr.hclust <- hclust(d, method = "ward.D2")
+plot(wisc.pr.hclust)
+```
+```{r}
+grps <- cutree(wisc.pr.hclust, k=2)
+table(grps)
+```
+
+```{r}
+table(grps, diagnosis)
+```
+```{r}
+plot(wisc.pr$x[,1:2], col=grps)
+```
+
+## 3D plot for PCA results
+```{r}
+library(rgl)
+```
+
+```{r}
+plot3d(wisc.pr$x[,1:3], xlab="PC1", ylab="PC2", zlab="PC3", cex=1.5, size=1, type="s", col=grps)
+```
+
+## Prediction
+We can use our PCA results to do predictions to a new data
+```{r}
+#url <- "new_samples.csv"
+url <- "https://tinyurl.com/new-samples-CSV"
+new <- read.csv(url)
+npc <- predict(wisc.pr, newdata=new)
+npc
+```
+
+```{r}
+plot(wisc.pr$x[,1:2], col=grps)
+points(npc[,1], npc[,2], col="blue", pch=16, cex=3)
+text(npc[,1], npc[,2], c(1,2), col="white")
+```
+
+## Summary
+
+Principle Component Analysis (PCA) is a super useful method for analyzing large datasets. It works by finding new variables (PCs) that captures the most variance from original variables in your datasets.

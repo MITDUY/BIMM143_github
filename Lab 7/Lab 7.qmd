@@ -1,0 +1,282 @@
+---
+title: "Lab 7: Unsupervised Learning"
+author: "Yi-Hung Lee (PID:A16587141)"
+format: html
+---
+
+Today we will start our multi-part exploration of some key machine learning methods. We will begin with clutching - finding groupings in data, and then dimensionally reduction.
+
+## Clustering
+
+Lets start from "k-means" cluster The main function in base R for this is `kmeans()` .
+
+```{r}
+# Make up some data
+hist(rnorm(10000, mean = 3))
+```
+
+```{r}
+# rnorm(30, -3)
+# rnorm(30, +3)
+
+# combine two vectors
+tmp <- c(rnorm(30, -3), rnorm(30, +3))
+
+# rev means print reverse
+data <- cbind(x = tmp, y = rev(tmp))
+library(ggplot2)
+ggplot(data, aes(x = x, y = y))+
+  geom_point()
+```
+
+## kmeans clustering
+
+Now let's try `kmeans()`
+
+```{r}
+km <- kmeans(data, centers = 2)
+km
+```
+
+> Q. How many points in each cluster?
+
+```{r}
+km$size
+```
+
+> Q. What component of your result object details cluster assignment/membership?
+
+```{r}
+km$cluster
+```
+
+> Q. What are centers/mean value of each center?
+
+```{r}
+km$centers
+```
+
+> Q. Make a plot of your data showing your cluster results (grouping/ cluster and cluster center)
+
+```{r}
+ggplot(data, aes(x = x, y = y))+
+  geom_point(col = km$cluster) +
+  geom_point(data = km$centers, color = 'green', size = 9, shape = 17) 
+```
+
+> Q. Run `kmeans()` again and cluster in 4 groups and plot the results.
+
+```{r}
+km4 <- kmeans(data, centers = 4)
+
+ggplot(data, aes(x = x, y = y))+
+  geom_point(col = km4$cluster) +
+  geom_point(data = km4$centers, color = 'red', size = 7, shape = 18) +
+  labs(title = 'Plots with 4 clusters')
+```
+
+## Hierarchical Clustering
+
+This form of clustering aims to reveal the structure in your data by progressively grouping points into a ever smaller number of clusters.
+
+The main function in base R for this is `hclust()`. This function does not take our input data directly but wants "distance matrix" that details how (dis)similar all our input points are to each other.
+
+```{r}
+hc <- hclust(dist(data))
+hc
+```
+
+The print out above is not very useful, but there is a useful `plot()` method.
+
+```{r}
+plot(hc)
+abline(h = 10, col = 'red')
+```
+
+To get my main result (my cluster membership vector) I need to "cut" my tree use `cutree()`
+
+```{r}
+cut <- cutree(hc, h = 10)
+cut
+```
+
+```{r}
+ggplot(data, aes(x, y)) + 
+  geom_point(col = cut)
+```
+
+Use ggplot to plot dendrogram
+
+```{r}
+library(ggdendro)
+hhc <- dendro_data(hc, type = "rectangle")
+ggdendrogram(hc, rotate = FALSE) +
+  labs(title = 'HCluster Dendrogram') 
+```
+
+## 1. PCA of UK food data
+
+Import and Read data
+
+```{r}
+url <- "https://tinyurl.com/UK-foods"
+x <- read.csv(url)
+```
+
+> Q1. How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+
+```{r}
+# Complete the following code to find out how many rows and columns are in x?
+dim(x)
+```
+
+Preview the first 6 rows
+
+```{r}
+head(x)
+```
+
+Remove the name column
+
+```{r}
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+
+Or you can do
+
+```{r}
+x <- read.csv(url, row.names=1)
+head(x)
+```
+
+```{r}
+dim(x)
+```
+
+> Q2. Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+
+```{r}
+x <- x[,-1]
+head(x)
+```
+
+This method is less robust because it would "cut" the data if you do it several times
+
+```{r}
+x <- read.csv(url, row.names=1)
+head(x)
+```
+
+### Spotting major differences and trends
+
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+
+> Q3: Changing what optional argument in the above barplot() function results in the following plot?
+
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+
+> Q5: Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+So the paris plot is useful for small datasets but it can be lots of work to interpret.
+
+Each plot is comparing two regions in terms of food raw data. Each data point is each food consumed in grams (per person, per week for the two region in x and y axis.
+
+> Q6. What is the main differences between N. Ireland and the other countries of the UK in terms of this data-set?
+
+### PCA to the rescue
+
+Using `prcomp()`
+
+```{r}
+# Use the prcomp() PCA function 
+pca <- prcomp(t(x))
+summary(pca)
+```
+
+```{r}
+attributes(pca)
+```
+
+```{r}
+pca$x
+```
+
+> Q7. Complete the code below to generate a plot of PC1 vs PC2. The second line adds text labels over the data points.
+
+```{r}
+# Plot PC1 vs PC2
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
+> Q8. Customize your plot so that the colors of the country names match the colors in our UK and Ireland map and table at start of this document.
+
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", xlim=c(-270,500), pch = 10)
+text(pca$x[,1], pca$x[,2], colnames(x), col = c('orange', 'red', 'blue', 'darkgreen'))
+abline(h = 0, col = "grey")
+abline(v = 0, col = "grey")
+```
+
+Another important output from PCA is called the "loading" vector or the "rotation" component - this tells us how much the original variables (the foods in this case) contribute to the new PCs
+
+```{r}
+pca$rotation
+```
+
+PCA is a super useful method for gaining insight into high dimensional data
+
+## PCA of RNA-seq data
+
+```{r}
+url2 <- "https://tinyurl.com/expression-CSV"
+rna.data <- read.csv(url2, row.names=1)
+head(rna.data)
+```
+
+```{r}
+## Again we have to take the transpose of our data 
+pca <- prcomp(t(rna.data), scale=TRUE)
+```
+
+```{r}
+summary(pca)
+```
+
+> Q. How many gene in this dataset?
+
+```{r}
+nrow(rna.data)
+```
+
+```{r}
+head(pca$x)
+```
+
+I will make a mian result figure using ggplot:
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+res <- as.data.frame(pca$x)
+mycols <- c(rep('blue', 5), rep('red', 5))
+
+ggplot(res, aes(x = PC1, y = PC2, label = row.names(res))) +
+  geom_label(col = mycols)
+```
+```{r}
+
+```
+
