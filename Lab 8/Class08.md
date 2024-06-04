@@ -181,7 +181,7 @@ head(km$cluster)
 ```
 
       842302   842517 84300903 84348301 84358402   843786 
-           1        1        1        2        1        2 
+           2        2        2        1        2        1 
 
 ``` r
 table(km$cluster, diagnosis)
@@ -189,8 +189,8 @@ table(km$cluster, diagnosis)
 
        diagnosis
           B   M
-      1   1 130
-      2 356  82
+      1 356  82
+      2   1 130
 
 Let’s try `hclust` is the distanct matrix as produced by the `dist()`
 function.
