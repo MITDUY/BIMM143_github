@@ -8,6 +8,6 @@ My classwork for BIMM143 S24 at UC San Diego.
 - **Class 8** [Unsupervised Learning Analysis of Human Breast Cancer Cells](https://github.com/MITDUY/BIMM143_github/blob/191a89e65fb0c55c080d0205f9d2520064aef2b5/Lab%208/Class08.pdf)
 - **Class 9**
 - **Class 10**
-- **Class 11**
+- **Class 11** [Introduction to Genome Informatics Lab](https://github.com/MITDUY/BIMM143_github/blob/401b7b435b063565c25995ecf7ba696b99971619/Class%2011/wk8_genomics_lab.pdf)
 - **Class 12**
 - **Class 13**
