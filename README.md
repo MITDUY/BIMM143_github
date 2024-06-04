@@ -6,8 +6,8 @@ My classwork for BIMM143 S24 at UC San Diego.
 - **Class 6** [R funciton](https://github.com/MITDUY/BIMM143_github/blob/e1a4942179968bacee68c756149849a01d2ad1f8/Lab6/Class%206-%20R%20function.md)
 - **Class 7** [Unsupervised Learning]
 - **Class 8** [Unsupervised Learning Analysis of Human Breast Cancer Cells](https://github.com/MITDUY/BIMM143_github/blob/191a89e65fb0c55c080d0205f9d2520064aef2b5/Lab%208/Class08.pdf)
-- **Class 9**
-- **Class 10**
+- **Class 9** [Candy Analysis Mini Project](https://github.com/MITDUY/BIMM143_github/blob/a542b341c2ee71e2c696bc227e64eaf0ebf94c1d/Class%2009/Class09-%20Candy%20analysis%20Mini%20project.md)
+- **Class 10** [Structural Bioinformatics (Pt. 1)](https://github.com/MITDUY/BIMM143_github/blob/a542b341c2ee71e2c696bc227e64eaf0ebf94c1d/Class10/Class10.md)
 - **Class 11** [Introduction to Genome Informatics Lab](https://github.com/MITDUY/BIMM143_github/blob/401b7b435b063565c25995ecf7ba696b99971619/Class%2011/wk8_genomics_lab.pdf)
 - **Class 12**
 - **Class 13**
