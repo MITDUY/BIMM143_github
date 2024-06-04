@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yi-Hung Lee">
+
+<title>Find A Gene</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Find a Gene_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Find a Gene_files/libs/quarto-html/quarto.js"></script>
+<script src="Find a Gene_files/libs/quarto-html/popper.min.js"></script>
+<script src="Find a Gene_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Find a Gene_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Find a Gene_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Find a Gene_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Find a Gene_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Find a Gene_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Find a Gene_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Find A Gene</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yi-Hung Lee </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bio3d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pdb <span class="ot">&lt;-</span> <span class="fu">read.fasta</span>(<span class="at">file =</span> <span class="st">"alignment.fa.fst"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>pdb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              1        .         .         .         .         .         60 
+Query_10001   LLECADDRADLAKYICENQDSISSKLKECCEKPLLEKSHCIAEVENDEMPADLPSLAADF
+Query_10002   MMACMVERMKLTTKTCEKKDELSTHLKECCEKPVLERSACIVRLPNDEKPADLSQQVRQY
+Query_10003   MMACMAERMKLTTQTCEKK--------KCCEKPVLERSECIVRLPNDEKPADLSPEVRYY
+Query_10004   MMGCMIERLHLTTRTCEKKDRISKHLKDCCDKDVIERSACIVKMENDEKPADLSPQVREY
+Query_10005   MIACMEDRLALTTKTCAKKDELSSKLAACCEKPVVERSACIVKMDNDDRPADLSPQVREY
+Query_10006   MMACMEDRLALTTKTCAKKDELSSKLAACCEKPIVERSACIVKMDNDDRPADLSPQVREY
+Query_10007   MMACMEDRLALTTKTCAKKDELSSKLAACCXKPVVERSACIVKMDNDDRPADLSPQVREY
+              ^^ *  ^*  *    *            ** * ^^*^* **  ^ **^ ****      ^ 
+              1        .         .         .         .         .         60 
+
+             61        .         .         .         .         .         120 
+Query_10001   VESKDVCKNYAEAKDVFLGMFLYEYARRHPDYSVVLLLRLAKTYETTLEKCCAAADPHEC
+Query_10002   IDDPEVCKHFKEEGDTFMGRFLCDYSKRHQDYSQELILRIGSGYEEVLKKCCAGEAHNEC
+Query_10003   FDDPEVCKRFKEEGDAFMGRFLCDYAKIHPEHSAELNLRIASGLEKAYKTCCAGEAHNEC
+Query_10004   LEGPDVCKHYADEKDLYLAKFSCDYAKRHPEFSLQLLLRVSKGYQDLLTKCCAEENSHDC
+Query_10005   IDDVSVCKRFEDDKNELLNHFLYDYSRRHPEMSTEMLLKIVIGYDGVLVKCCHKEDKLAC
+Query_10006   IDDVSVCKRFEDDKNELLSHFLYDYSRRHPEMSTEMLLKIVIGYDGLLVKCCHEEDKLAC
+Query_10007   IDDVSVCKRFEDDKNELLSHFLYDYSRRHPEMSTEMLLKIVIGYDGLLVKCCHEEDKLAC
+               ^   *** ^ ^     ^  *  ^* ^ * ^ *  ^ *^^          **       * 
+             61        .         .         .         .         .         120 
+
+            121        .         .         .         .         .         180 
+Query_10001   YAKVFDEFKPLVEEPQNLIKQNCELFEQLGEYKFQNALLVRYTKKVPQVSTPTLVEVSRN
+Query_10002   IAKAEETMKHEIEASKTLLKTTCAALEKMGPYFFQNHLITKYTPKLPRCKVENLLHITKS
+Query_10003   IAKEEETLRHEIEASKTKLKTTCGALEKLGPYHFQNIMIVRYTGILPRSSDAFLLYITKT
+Query_10004   LIKGEEALKKEIESSTTLLKTTCAAFEKLGPYSFQNELLVKYTRNIPQLTDESLLHITSG
+Query_10005   LGKAEGEMKKEVQSSVELLKTNCAALEKVGSYHFEVMLLGKYTLTMPQVTTPTLIHLIDD
+Query_10006   LGKAEGEMKKEVQSSVELLKTNCAALEKVGSYHFEVMLLGKYTTRMPQVTTPTLIHLIDD
+Query_10007   LGKAEGEMKKEVQSSVELLKTNCAALEKVGSYHFEVMLLGKYTPTMPQVTTPTLIHLIDD
+                *     ^  ^      ^*  *   * ^* * *   ^^ ^**  ^*      *^ ^    
+            121        .         .         .         .         .         180 
+
+            181        .         .         .         .         .  233 
+Query_10001   LGKVGSKCCKHPEAKRMPCAEDYLSVVLNQLCVLHEKTPVSDRVTKCCTESLV
+Query_10002   MTTIGQRCCKLPEDQQMPCSEGGLSLVLGQVCQ-QKTPFEIEKVAHCCKDSLS
+Query_10003   LTNIGQKCCKLPEDQQMPCSEGGLGMVFAQICQNQKTPFENEKLAHCCKDSLS
+Query_10004   MTRIGQKCCKIPEEKQMPCSEGSLSLVIGEMCEKMPANFPNEKVTHCCSDT--
+Query_10005   MTHVGEYCCKVPAEKQLPCSEGALGLIIGSMCQKQEGHFVNNQVAHCCSDSYA
+Query_10006   MTHVGEYCCKVPAEKQLPCSEGALGLIIGSMCEKQEGHFVNNQVAHCCSDSYA
+Query_10007   MTHVGEYCCKVPAEKQLPCSEGALGLIIGSMCEKQEGHFVNNQVAHCCSDSYA
+              ^  ^*  *** *    ^** *  * ^^   ^*           ^ ^** ^^   
+            181        .         .         .         .         .  233 
+
+Call:
+  read.fasta(file = "alignment.fa.fst")
+
+Class:
+  fasta
+
+Alignment dimensions:
+  7 sequence rows; 233 position columns (222 non-gap, 11 gap) 
+
++ attr: id, ali, call</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>rd <span class="ot">&lt;-</span> <span class="fu">seqidentity</span>(pdb)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Query_10001 Query_10002 Query_10003 Query_10004 Query_10005
+Query_10001       1.000       0.405       0.378       0.420       0.382
+Query_10002       0.405       1.000       0.763       0.596       0.530
+Query_10003       0.378       0.763       1.000       0.552       0.458
+Query_10004       0.420       0.596       0.552       1.000       0.541
+Query_10005       0.382       0.530       0.458       0.541       1.000
+Query_10006       0.382       0.522       0.453       0.554       0.966
+Query_10007       0.378       0.526       0.453       0.558       0.970
+            Query_10006 Query_10007
+Query_10001       0.382       0.378
+Query_10002       0.522       0.526
+Query_10003       0.453       0.453
+Query_10004       0.554       0.558
+Query_10005       0.966       0.970
+Query_10006       1.000       0.983
+Query_10007       0.983       1.000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste0</span>(<span class="st">"Query_1000"</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Query_10001" "Query_10002" "Query_10003" "Query_10004" "Query_10005"
+[6] "Query_10006" "Query_10007"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(rd) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Query_1000"</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(rd) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Query_1000"</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(rd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Find-a-Gene_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Mysequence <span class="ot">&lt;-</span> <span class="fu">read.fasta</span>(<span class="at">file =</span> <span class="st">"Mysequence.fst"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">blast.pdb</span>(Mysequence)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Searching ... please wait (updates every 5 seconds) RID = 5UR6BHTD016 
+ ................................
+ Reporting 45 hits</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$hit.tbl
+         queryid subjectids identity alignmentlength mismatches gapopens
+1  Query_3378657     4F5V_A   42.489             233        131        2
+3  Query_3378657     3V09_A   42.489             233        131        2
+5  Query_3378657     5Z0B_A   41.631             233        133        2
+6  Query_3378657     2VDB_A   41.631             233        133        2
+7  Query_3378657     2I2Z_A   41.631             233        133        2
+8  Query_3378657   7AAE_AAA   41.631             233        133        2
+9  Query_3378657     2BXI_A   41.631             233        133        2
+10 Query_3378657     1BKE_A   41.631             233        133        2
+11 Query_3378657     8ITT_A   41.631             233        133        2
+12 Query_3378657     4N0U_D   41.631             233        133        2
+13 Query_3378657     1HK3_A   41.631             233        133        2
+14 Query_3378657     1HK2_A   41.631             233        133        2
+15 Query_3378657     5GIX_A   41.631             233        133        2
+16 Query_3378657     6M5D_A   41.631             233        133        2
+17 Query_3378657     3CX9_A   41.631             233        133        2
+18 Query_3378657     1AO6_A   41.631             233        133        2
+19 Query_3378657     6JE7_A   41.631             233        133        2
+20 Query_3378657     1TF0_A   41.631             233        133        2
+21 Query_3378657     6ZL1_A   41.631             233        133        2
+22 Query_3378657     4BKE_A   41.631             233        133        2
+23 Query_3378657     4K71_A   41.631             233        133        2
+24 Query_3378657     8A9Q_A   42.060             233        132        2
+25 Query_3378657     4ZBQ_A   41.453             234        134        2
+26 Query_3378657     7Q4X_A   41.453             234        134        2
+27 Query_3378657     5GHK_A   40.773             233        135        2
+28 Query_3378657     6XK0_A   41.026             234        135        2
+29 Query_3378657     5HOZ_A   41.026             234        135        2
+30 Query_3378657     5DQF_A   41.026             234        135        2
+31 Query_3378657     3V08_A   41.026             234        135        2
+32 Query_3378657     5YXE_A   41.631             233        133        2
+33 Query_3378657     5ORI_A   40.773             233        135        2
+35 Query_3378657     4LUF_A   40.773             233        135        2
+37 Query_3378657     3V03_A   38.627             233        140        2
+39 Query_3378657     6QS9_A   38.627             233        140        2
+41 Query_3378657     7YIM_A   33.333             234        153        2
+43 Query_3378657     5OKL_A   30.472             233        159        2
+44 Query_3378657     1YSX_A   39.796              98         56        2
+34 Query_3378657     5ORI_A   24.242             165        118        2
+40 Query_3378657     6QS9_A   24.242             165        118        2
+36 Query_3378657     4LUF_A   23.030             165        120        2
+38 Query_3378657     3V03_A   23.636             165        119        2
+42 Query_3378657     7YIM_A   22.886             201        147        4
+2  Query_3378657     4F5V_A   23.780             164        121        3
+4  Query_3378657     3V09_A   23.171             164        122        3
+45 Query_3378657     2RDL_A   38.889              36         22        0
+   q.start q.end s.start s.end   evalue bitscore positives mlog.evalue pdb.id
+1        1   231     250   481 1.02e-62    206.0     64.81 142.7404731 4F5V_A
+3        1   231     250   481 1.16e-62    206.0     64.81 142.6118558 3V09_A
+5        1   231     250   481 7.60e-62    204.0     63.09 140.7321275 5Z0B_A
+6        1   231     245   476 7.73e-62    204.0     63.09 140.7151669 2VDB_A
+7        1   231     250   481 7.84e-62    204.0     63.09 140.7010369 2I2Z_A
+8        1   231     249   480 7.87e-62    204.0     63.09 140.6972177 7AAE_a
+9        1   231     250   481 8.27e-62    204.0     63.09 140.6476413 2BXI_A
+10       1   231     247   478 8.45e-62    204.0     63.09 140.6261093 1BKE_A
+11       1   231     248   479 8.47e-62    204.0     63.09 140.6237453 8ITT_A
+12       1   231     248   479 8.58e-62    204.0     63.09 140.6108419 4N0U_D
+13       1   231     250   481 8.62e-62    204.0     63.09 140.6061907 1HK3_A
+14       1   231     250   481 8.62e-62    204.0     63.09 140.6061907 1HK2_A
+15       1   231     248   479 8.63e-62    204.0     63.09 140.6050313 5GIX_A
+16       1   231     247   478 8.68e-62    204.0     63.09 140.5992542 6M5D_A
+17       1   231     248   479 8.79e-62    204.0     63.09 140.5866611 3CX9_A
+18       1   231     250   481 8.90e-62    204.0     63.09 140.5742245 1AO6_A
+19       1   231     249   480 9.44e-62    204.0     63.09 140.5153198 6JE7_A
+20       1   231     250   481 1.00e-61    203.0     63.09 140.4576907 1TF0_A
+21       1   231     274   505 1.20e-61    204.0     63.09 140.2753691 6ZL1_A
+22       1   231     274   505 1.24e-61    204.0     63.09 140.2425793 4BKE_A
+23       1   231     250   481 1.26e-61    203.0     63.09 140.2265790 4K71_A
+24       1   231     250   481 1.71e-61    203.0     62.66 139.9211973 8A9Q_A
+25       1   232     249   481 8.09e-60    199.0     60.26 136.0644768 4ZBQ_A
+26       1   232     246   478 9.27e-60    198.0     60.26 135.9283222 7Q4X_A
+27       1   231     250   481 3.74e-59    197.0     61.80 134.5334349 5GHK_A
+28       1   232     249   481 4.83e-59    197.0     59.83 134.2776740 6XK0_A
+29       1   232     249   481 5.95e-59    196.0     59.83 134.0691293 5HOZ_A
+30       1   232     246   478 7.66e-59    196.0     59.83 133.8165085 5DQF_A
+31       1   232     249   481 8.16e-59    196.0     59.83 133.7532763 3V08_A
+32       1   231     250   481 2.99e-58    194.0     61.37 132.4546620 5YXE_A
+33       1   231     249   480 8.46e-58    193.0     60.94 131.4145862 5ORI_A
+35       1   231     249   480 1.00e-57    193.0     60.94 131.2473503 4LUF_A
+37       1   231     249   480 5.08e-57    191.0     62.23 129.6220390 3V03_A
+39       1   231     273   504 5.10e-57    192.0     62.23 129.6181098 6QS9_A
+41       1   232     274   506 2.08e-44    158.0     54.27 100.5813762 7YIM_A
+43       1   232     253   483 2.34e-33    127.0     49.79  75.1351571 5OKL_A
+44     136   231       1    97 7.82e-20     85.1     65.31  43.9950173 1YSX_A
+34      26   189      87   245 1.20e-14     73.9     48.48  32.0538697 5ORI_A
+40      26   189     111   269 5.31e-14     72.0     47.27  30.5665995 6QS9_A
+36      26   189      87   245 1.94e-13     70.5     47.27  29.2709182 4LUF_A
+38      26   189      87   245 2.20e-13     70.1     46.67  29.1451488 3V03_A
+42      28   228     112   304 7.44e-13     68.6     43.78  27.9267354 7YIM_A
+2       26   189      87   246 2.21e-12     67.4     46.34  26.8380286 4F5V_A
+4       26   189      87   246 1.54e-11     64.7     46.34  24.8966536 3V09_A
+45      37    72     124   159 5.10e-01     32.7     61.11   0.6733446 2RDL_A
+        acc
+1    4F5V_A
+3    3V09_A
+5    5Z0B_A
+6    2VDB_A
+7    2I2Z_A
+8  7AAE_AAA
+9    2BXI_A
+10   1BKE_A
+11   8ITT_A
+12   4N0U_D
+13   1HK3_A
+14   1HK2_A
+15   5GIX_A
+16   6M5D_A
+17   3CX9_A
+18   1AO6_A
+19   6JE7_A
+20   1TF0_A
+21   6ZL1_A
+22   4BKE_A
+23   4K71_A
+24   8A9Q_A
+25   4ZBQ_A
+26   7Q4X_A
+27   5GHK_A
+28   6XK0_A
+29   5HOZ_A
+30   5DQF_A
+31   3V08_A
+32   5YXE_A
+33   5ORI_A
+35   4LUF_A
+37   3V03_A
+39   6QS9_A
+41   7YIM_A
+43   5OKL_A
+44   1YSX_A
+34   5ORI_A
+40   6QS9_A
+36   4LUF_A
+38   3V03_A
+42   7YIM_A
+2    4F5V_A
+4    3V09_A
+45   2RDL_A
+
+$raw
+         queryid subjectids identity alignmentlength mismatches gapopens
+1  Query_3378657     4F5V_A   42.489             233        131        2
+2  Query_3378657     4F5V_A   23.780             164        121        3
+3  Query_3378657     3V09_A   42.489             233        131        2
+4  Query_3378657     3V09_A   23.171             164        122        3
+5  Query_3378657     5Z0B_A   41.631             233        133        2
+6  Query_3378657     2VDB_A   41.631             233        133        2
+7  Query_3378657     2I2Z_A   41.631             233        133        2
+8  Query_3378657   7AAE_AAA   41.631             233        133        2
+9  Query_3378657     2BXI_A   41.631             233        133        2
+10 Query_3378657     1BKE_A   41.631             233        133        2
+11 Query_3378657     8ITT_A   41.631             233        133        2
+12 Query_3378657     4N0U_D   41.631             233        133        2
+13 Query_3378657     1HK3_A   41.631             233        133        2
+14 Query_3378657     1HK2_A   41.631             233        133        2
+15 Query_3378657     5GIX_A   41.631             233        133        2
+16 Query_3378657     6M5D_A   41.631             233        133        2
+17 Query_3378657     3CX9_A   41.631             233        133        2
+18 Query_3378657     1AO6_A   41.631             233        133        2
+19 Query_3378657     6JE7_A   41.631             233        133        2
+20 Query_3378657     1TF0_A   41.631             233        133        2
+21 Query_3378657     6ZL1_A   41.631             233        133        2
+22 Query_3378657     4BKE_A   41.631             233        133        2
+23 Query_3378657     4K71_A   41.631             233        133        2
+24 Query_3378657     8A9Q_A   42.060             233        132        2
+25 Query_3378657     4ZBQ_A   41.453             234        134        2
+26 Query_3378657     7Q4X_A   41.453             234        134        2
+27 Query_3378657     5GHK_A   40.773             233        135        2
+28 Query_3378657     6XK0_A   41.026             234        135        2
+29 Query_3378657     5HOZ_A   41.026             234        135        2
+30 Query_3378657     5DQF_A   41.026             234        135        2
+31 Query_3378657     3V08_A   41.026             234        135        2
+32 Query_3378657     5YXE_A   41.631             233        133        2
+33 Query_3378657     5ORI_A   40.773             233        135        2
+34 Query_3378657     5ORI_A   24.242             165        118        2
+35 Query_3378657     4LUF_A   40.773             233        135        2
+36 Query_3378657     4LUF_A   23.030             165        120        2
+37 Query_3378657     3V03_A   38.627             233        140        2
+38 Query_3378657     3V03_A   23.636             165        119        2
+39 Query_3378657     6QS9_A   38.627             233        140        2
+40 Query_3378657     6QS9_A   24.242             165        118        2
+41 Query_3378657     7YIM_A   33.333             234        153        2
+42 Query_3378657     7YIM_A   22.886             201        147        4
+43 Query_3378657     5OKL_A   30.472             233        159        2
+44 Query_3378657     1YSX_A   39.796              98         56        2
+45 Query_3378657     2RDL_A   38.889              36         22        0
+   q.start q.end s.start s.end   evalue bitscore positives
+1        1   231     250   481 1.02e-62    206.0     64.81
+2       26   189      87   246 2.21e-12     67.4     46.34
+3        1   231     250   481 1.16e-62    206.0     64.81
+4       26   189      87   246 1.54e-11     64.7     46.34
+5        1   231     250   481 7.60e-62    204.0     63.09
+6        1   231     245   476 7.73e-62    204.0     63.09
+7        1   231     250   481 7.84e-62    204.0     63.09
+8        1   231     249   480 7.87e-62    204.0     63.09
+9        1   231     250   481 8.27e-62    204.0     63.09
+10       1   231     247   478 8.45e-62    204.0     63.09
+11       1   231     248   479 8.47e-62    204.0     63.09
+12       1   231     248   479 8.58e-62    204.0     63.09
+13       1   231     250   481 8.62e-62    204.0     63.09
+14       1   231     250   481 8.62e-62    204.0     63.09
+15       1   231     248   479 8.63e-62    204.0     63.09
+16       1   231     247   478 8.68e-62    204.0     63.09
+17       1   231     248   479 8.79e-62    204.0     63.09
+18       1   231     250   481 8.90e-62    204.0     63.09
+19       1   231     249   480 9.44e-62    204.0     63.09
+20       1   231     250   481 1.00e-61    203.0     63.09
+21       1   231     274   505 1.20e-61    204.0     63.09
+22       1   231     274   505 1.24e-61    204.0     63.09
+23       1   231     250   481 1.26e-61    203.0     63.09
+24       1   231     250   481 1.71e-61    203.0     62.66
+25       1   232     249   481 8.09e-60    199.0     60.26
+26       1   232     246   478 9.27e-60    198.0     60.26
+27       1   231     250   481 3.74e-59    197.0     61.80
+28       1   232     249   481 4.83e-59    197.0     59.83
+29       1   232     249   481 5.95e-59    196.0     59.83
+30       1   232     246   478 7.66e-59    196.0     59.83
+31       1   232     249   481 8.16e-59    196.0     59.83
+32       1   231     250   481 2.99e-58    194.0     61.37
+33       1   231     249   480 8.46e-58    193.0     60.94
+34      26   189      87   245 1.20e-14     73.9     48.48
+35       1   231     249   480 1.00e-57    193.0     60.94
+36      26   189      87   245 1.94e-13     70.5     47.27
+37       1   231     249   480 5.08e-57    191.0     62.23
+38      26   189      87   245 2.20e-13     70.1     46.67
+39       1   231     273   504 5.10e-57    192.0     62.23
+40      26   189     111   269 5.31e-14     72.0     47.27
+41       1   232     274   506 2.08e-44    158.0     54.27
+42      28   228     112   304 7.44e-13     68.6     43.78
+43       1   232     253   483 2.34e-33    127.0     49.79
+44     136   231       1    97 7.82e-20     85.1     65.31
+45      37    72     124   159 5.10e-01     32.7     61.11
+
+$url
+                                                                                                                                                                          5UR6BHTD016 
+"https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Get&amp;FORMAT_OBJECT=Alignment&amp;ALIGNMENT_VIEW=Tabular&amp;RESULTS_FILE=on&amp;FORMAT_TYPE=CSV&amp;ALIGNMENTS=20000&amp;DESCRIPTIONS=20000&amp;RID=5UR6BHTD016" 
+
+attr(,"class")
+[1] "blast"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.blast</span>(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  * Possible cutoff values:    129 75 0 
+            Yielding Nhits:    34 36 45 
+
+  * Chosen cutoff value of:    75 
+            Yielding Nhits:    36 </code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="Find-a-Gene_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdb.annotate</span>(<span class="st">"4F5V"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       structureId chainId macromoleculeType chainLength experimentalTechnique
+4F5V_A        4F5V       A           Protein         584                 X-ray
+       resolution        scopDomain                                 pfam
+4F5V_A       2.27 automated matches Serum albumin family (Serum_albumin)
+                  ligandId
+4F5V_A PG4,PGE (2),ACT (2)
+                                                        ligandName
+4F5V_A TETRAETHYLENE GLYCOL,TRIETHYLENE GLYCOL (2),ACETATE ION (2)
+                      source                              structureTitle
+4F5V_A Oryctolagus cuniculus Crystal Structure of Leporine Serum Albumin
+                                                    citation rObserved   rFree
+4F5V_A Bujacz, A. Acta Crystallogr D Biol Crystallogr (2012)   0.19621 0.25768
+         rWork spaceGroup
+4F5V_A 0.19297 P 21 21 21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdb.annotate</span>(<span class="st">"3V09"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       structureId chainId macromoleculeType chainLength experimentalTechnique
+3V09_A        3V09       A           Protein         584                 X-ray
+       resolution        scopDomain                                 pfam
+3V09_A       2.27 automated matches Serum albumin family (Serum_albumin)
+                                  ligandId
+3V09_A MES (2),PG4 (3),UNX (22),EDO (5),CL
+                                                                                                                       ligandName
+3V09_A 2-(N-MORPHOLINO)-ETHANESULFONIC ACID (2),TETRAETHYLENE GLYCOL (3),UNKNOWN ATOM OR ION (22),1,2-ETHANEDIOL (5),CHLORIDE ION
+                      source                            structureTitle
+3V09_A Oryctolagus cuniculus Crystal structure of Rabbit Serum Albumin
+                                       citation rObserved   rFree   rWork
+3V09_A Majorek, K.A., et al. Mol Immunol (2012)   0.19522 0.24286 0.19265
+       spaceGroup
+3V09_A P 21 21 21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pdb.annotate</span>(<span class="st">"5Z0B"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       structureId chainId macromoleculeType chainLength experimentalTechnique
+5Z0B_A        5Z0B       A           Protein         585                 X-ray
+5Z0B_B        5Z0B       B           Protein         585                 X-ray
+5Z0B_C        5Z0B       C           Protein         585                 X-ray
+       resolution    scopDomain                                 pfam
+5Z0B_A       2.17 Serum albumin Serum albumin family (Serum_albumin)
+5Z0B_B       2.17 Serum albumin Serum albumin family (Serum_albumin)
+5Z0B_C       2.17 Serum albumin Serum albumin family (Serum_albumin)
+                                                  ligandId
+5Z0B_A     EIC,OCA (2),PLM,TRP,SO4 (8),PEG (3),PGE,PG4 (2)
+5Z0B_B EIC,OCA,PLM (2),TRP,SO4 (7),PEG (7),PGE (2),PG4,1PE
+5Z0B_C     EIC,OCA (2),PLM,TRP,SO4 (4),PEG (3),PGE,PG4 (2)
+                                                                                                                                                                                ligandName
+5Z0B_A                      LINOLEIC ACID,OCTANOIC ACID (CAPRYLIC ACID) (2),PALMITIC ACID,TRYPTOPHAN,SULFATE ION (8),DI(HYDROXYETHYL)ETHER (3),TRIETHYLENE GLYCOL,TETRAETHYLENE GLYCOL (2)
+5Z0B_B LINOLEIC ACID,OCTANOIC ACID (CAPRYLIC ACID),PALMITIC ACID (2),TRYPTOPHAN,SULFATE ION (7),DI(HYDROXYETHYL)ETHER (7),TRIETHYLENE GLYCOL (2),TETRAETHYLENE GLYCOL,PENTAETHYLENE GLYCOL
+5Z0B_C                      LINOLEIC ACID,OCTANOIC ACID (CAPRYLIC ACID) (2),PALMITIC ACID,TRYPTOPHAN,SULFATE ION (4),DI(HYDROXYETHYL)ETHER (3),TRIETHYLENE GLYCOL,TETRAETHYLENE GLYCOL (2)
+             source                                          structureTitle
+5Z0B_A Homo sapiens Crystal structure of plasma-derived human serum albumin
+5Z0B_B Homo sapiens Crystal structure of plasma-derived human serum albumin
+5Z0B_C Homo sapiens Crystal structure of plasma-derived human serum albumin
+                                citation rObserved  rFree  rWork spaceGroup
+5Z0B_A Park, J., et al. To be published     0.1853 0.2323 0.1828    C 1 2 1
+5Z0B_B Park, J., et al. To be published     0.1853 0.2323 0.1828    C 1 2 1
+5Z0B_C Park, J., et al. To be published     0.1853 0.2323 0.1828    C 1 2 1</code></pre>
+</div>
+</div>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

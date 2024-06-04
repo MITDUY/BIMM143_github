@@ -1,0 +1,220 @@
+---
+title: "Class10: Structural Bioinformatics (Pt. 1)"
+author: "Yi-Hung Lee(PID: A16587141)"
+format: html
+---
+## 1: Introduction to the RCSB Protein Data Bank (PDB)
+
+Import .csv file
+```{r}
+data <- read.csv('Data Export Summary.csv', row.names = 1)
+data
+```
+
+> Q1: What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy.
+
+```{r}
+sumcomma <- function(x){
+  as.numeric(gsub(",","", x))
+}
+
+data <- as.data.frame(apply(data, 2, sumcomma))
+data
+
+(data$X.ray[1] + data$EM[1]) / data$Total[1] * 100
+```
+
+> Q2: What proportion of structures in the PDB are protein?
+
+```{r}
+data$Total[1]/sum(data$Total) * 100
+```
+
+
+> Q3: Type HIV in the PDB website search box on the home page and determine how many HIV-1 protease structures are in the current PDB?
+
+```{r}
+248805733 - 186898
+```
+
+
+## Visualizing the HIV-1 protease structure
+
+Mol* (Molstar) viewer is now everywhere
+
+
+> Q4: Water molecules normally have 3 atoms. Why do we see just one atom per water molecule in this structure?
+
+Hydrogen is too small
+
+> Q5: There is a critical “conserved” water molecule in the binding site. Can you identify this water molecule? What residue number does this water molecule have
+
+ASP 25 interact with HOH 308
+
+![](1HSG.png)
+
+
+> Q6: Generate and save a figure clearly showing the two distinct chains of HIV-protease along with the ligand. You might also consider showing the catalytic residues ASP 25 in each chain and the critical water (we recommend “Ball & Stick” for these side-chains). Add this figure to your Quarto document.
+
+![](1HSG-1.png)
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+pdb <- read.pdb('1hsg')
+pdb
+```
+
+```{r}
+attributes(pdb)
+```
+
+> Q7: How many amino acid residues are there in this pdb object?
+
+There are `r length(pdb$seqres)` amino acids in the pdb object
+
+> Q8: Name one of the two non-protein residues?
+
+HOH (127), MK1 (1)
+
+> Q9: How many protein chains are in this structure?
+
+```{r}
+length(pdb$helix$chain)
+```
+
+
+```{r}
+head(pdb$atom)
+```
+
+## Predicting functional motions of a single structure
+
+```{r}
+adk <- read.pdb("6s36")
+```
+
+```{r}
+adk
+```
+
+```{r}
+m <- nma(adk)
+```
+
+```{r}
+plot(m)
+```
+
+```{r}
+mktrj(m, file="adk_m7.pdb")
+```
+
+## 4. Comparative structure analysis of Adenylate Kinase
+
+> Q10. Which of the packages above is found only on BioConductor and not CRAN?
+
+msa package
+
+> Q11. Which of the above packages is not found on BioConductor or CRAN?:
+
+devtools
+
+> Q12. True or False? Functions from the devtools package can be used to install packages from GitHub and BitBucket?
+
+True
+
+```{r}
+aa <- get.seq("1ake_A")
+```
+
+```{r}
+aa
+```
+
+> Q13. How many amino acids are in this sequence, i.e. how long is this sequence?
+
+214
+
+```{r}
+# Blast or hmmer search 
+# b <- blast.pdb(aa)
+```
+
+```{r}
+# Plot a summary of search results
+# hits <- plot(b)
+```
+
+```{r}
+hits <- NULL
+hits$pdb.id <- c('1AKE_A','6S36_A','6RZE_A','3HPR_A','1E4V_A','5EJE_A','1E4Y_A','3X2S_A','6HAP_A','6HAM_A','4K46_A','3GMT_A','4PZL_A')
+```
+
+```{r}
+files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+
+### Align and superpose structures
+
+```{r}
+# Align releated PDBs
+pdbs <- pdbaln(files, fit = TRUE, exefile="msa")
+```
+
+```{r}
+# Vector containing PDB codes for figure axis
+ids <- basename.pdb(pdbs$id)
+
+# Draw schematic alignment
+#par(mar = c(1, 1, 1, 1))
+#plot(pdbs, labels=ids)
+```
+
+### Annotate collected PDB structures
+
+```{r}
+anno <- pdb.annotate(ids)
+unique(anno$source)
+head(anno)
+```
+
+```{r}
+pc.xray <- pca(pdbs)
+plot(pc.xray)
+```
+
+```{r}
+# Calculate RMSD
+rd <- rmsd(pdbs)
+
+# Structure-based clustering
+hc.rd <- hclust(dist(rd))
+grps.rd <- cutree(hc.rd, k=3)
+
+plot(pc.xray, 1:2, col="grey50", bg=grps.rd, pch=21, cex=1)
+```
+
+## 5. Optional further visualization
+
+```{r}
+# Visualize first principal component
+pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+df <- data.frame(PC1=pc.xray$z[,1], 
+                 PC2=pc.xray$z[,2], 
+                 col=as.factor(grps.rd),
+                 ids=ids)
+
+ggplot(df, aes(PC1, PC2, col = col, label = ids)) +
+  geom_point() +
+  geom_text_repel(max.overlaps = 15)
+```
+

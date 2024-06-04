@@ -1,0 +1,52 @@
+---
+title: "Find A Gene"
+author: "Yi-Hung Lee"
+format: html
+---
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+pdb <- read.fasta(file = "alignment.fa.fst")
+pdb
+```
+
+```{r}
+rd <- seqidentity(pdb)
+rd
+paste0("Query_1000",1:7)
+```
+
+```{r}
+
+library(pheatmap)
+
+colnames(rd) <- paste0("Query_1000",1:7)
+rownames(rd) <- paste0("Query_1000",1:7)
+pheatmap(rd)
+
+```
+
+```{r}
+Mysequence <- read.fasta(file = "Mysequence.fst")
+result <- blast.pdb(Mysequence)
+```
+
+```{r}
+result
+```
+
+```{r}
+plot.blast(result)
+```
+
+
+```{r}
+pdb.annotate("4F5V")
+pdb.annotate("3V09")
+pdb.annotate("5Z0B")
+
+```
+
